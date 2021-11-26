@@ -2,6 +2,7 @@ import os
 import random
 import sys
 import getopt
+import re
 
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -40,9 +41,15 @@ async def sb(ctx, *, arg):
         if verbose:
             print('  We rollin''')
         results = ''
+        error = ''
         for die in args:
             if die.lower() == 'roll':
                 continue
+
+            if re.search(r'^\d+d\d+$', die) is None:
+                error = error + die + ' '
+                continue
+
             die_vals = die.lower().split('d')
             quantity = int(die_vals[0])
             faces = int(die_vals[1])
@@ -58,13 +65,15 @@ async def sb(ctx, *, arg):
                     print(f'  die #{die_num}={die_results}')
             results = results + die_results[:-1] + f'={total}\n'
         if verbose:
-            print(f'  final result: {results}')
+            print(f'  final result: {results}\nerrors: {error}')
+        if len(error) > 0:
+            results = results + f'\nI didn\'t recognize these as valid dice.\n{error}'
         await ctx.send(results)
 
     if args[0].lower() == 'help':
         help_text =  'I recognize these commands:\n'
         help_text += '**help**: Show this message.\n'
-        help_text += '**roll**: Roll dice. Enter in the standard format (1d4).'
+        help_text += '**roll**: Roll dice. Enter in the standard format (1d4 2d6 etc).'
         await ctx.send(help_text)
 
 bot.run(TOKEN)
