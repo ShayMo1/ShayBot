@@ -42,6 +42,7 @@ async def sb(ctx, *, arg):
             print('  We rollin''')
         results = ''
         error = ''
+        total = 0
         for die in args:
             if die.lower() == 'roll':
                 continue
@@ -56,14 +57,16 @@ async def sb(ctx, *, arg):
             if verbose:
                 print(f'  {quantity}:{faces}')
             die_results = f'{die}='
-            total = 0
+            die_total = 0
             for die_num in range(0, quantity):
                 roll_val = random.randrange(1, faces, 1)
-                total = total + roll_val
+                die_total = die_total + roll_val
                 die_results = die_results + str(roll_val) + ','
                 if verbose:
                     print(f'  die #{die_num}={die_results}')
-            results = results + die_results[:-1] + f'={total}\n'
+            total = total + die_total
+            results = results + die_results[:-1] + f'={die_total}\n'
+        results = results + f'Total={total}'
         if verbose:
             print(f'  final result: {results}\nerrors: {error}')
         if len(error) > 0:
